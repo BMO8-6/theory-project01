@@ -58,9 +58,11 @@ def GenerateInput(cnf):
 def main():
     path = "2SAT.cnf"
     cnf_gen = ReadCNFObject(path)
+    cnf = next(cnf_gen)
+    print(cnf.wff)
     for cnf in cnf_gen:
-        input = GenerateInput(cnf)
-        print(input)
+        print(f"\nGenerating input for {cnf.problem_id}...")
+        GenerateInput(cnf)
 
 
 if __name__ == '__main__':
