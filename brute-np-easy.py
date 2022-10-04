@@ -36,16 +36,16 @@ def ReadCNFObject(path):
                 if wff:
                     yield CNF(int(problem_id), int(max_n_literals), int(n_vars), int(n_clauses), std_answer, wff)
                     wff = []
-                [_, problem_id, max_n_literals, std_answer] = line.split(" ")
+                _, problem_id, max_n_literals, std_answer = line.split(" ")
             elif line.startswith(('p')):
-                [_, _, n_vars, n_clauses] = line.split(" ")
+                _, _, n_vars, n_clauses = line.split(" ")
             else:
                 items = [int(x) for x in line.split(',')]
                 wff.append(items[:-1])
 
 
-def GenerateInput(wff):
-    num_var = wff.n_vars
+def GenerateInput(cnf):
+    num_var = cnf.n_vars
     start_set = set()
 
     for i in range(num_var + 1):
@@ -56,14 +56,11 @@ def GenerateInput(wff):
     return start_set
 
 def main():
-    path = "kSAT.cnf"
+    path = "2SAT.cnf"
     cnf_gen = ReadCNFObject(path)
-    for _ in range(10):
-        cnf = next(cnf_gen)
+    for cnf in cnf_gen:
         input = GenerateInput(cnf)
         print(input)
-
-    return 0
 
 
 if __name__ == '__main__':
