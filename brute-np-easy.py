@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+
 # reads in file and generates the next wff each time called on next()
 def ReadWff(path):
     with open(path) as fp:
@@ -11,7 +12,35 @@ def ReadWff(path):
             elif not line.startswith(('c', 'p')):
                 items = [int(x) for x in line.split(',')]
                 wff.append(items[:-1])
-                
+
+# TODO I don't know whether we'll need the meta data for the wffs (num of vars, answer of S/U, etc) so I created this
+# pretty equivalent version of generator working with a class. Pick which one is needed.
+
+class CNF:
+    def __init__(self, problem_id, max_n_literals, n_vars, n_clauses, std_answer, wff):
+        self.problem_id = problem_id
+        self.max_n_literals = max_n_literals
+        self.n_vars = n_vars
+        self.n_clauses = n_clauses
+        self.std_answer = std_answer
+        self.wff = wff
+
+
+def ReadCNFObject(path):
+    with open(path) as fp:
+        wff = []
+        for line in fp:
+            if line.startswith(('c')):
+                if wff:
+                    yield CNF(int(problem_id), int(max_n_literals), int(n_vars), int(n_clauses), std_answer, wff)
+                    wff = []
+                [_, problem_id, max_n_literals, std_answer] = line.split(" ")
+            elif line.startswith(('p')):
+                [_, _, n_vars, n_clauses] = line.split(" ")
+            else:
+                items = [int(x) for x in line.split(',')]
+                wff.append(items[:-1])
+
 
 def main():
     path = "kSAT.cnf"
