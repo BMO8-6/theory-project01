@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+# Libraries
+import itertools
 
 # reads in file and generates the next wff each time called on next()
 def ReadWff(path):
@@ -42,12 +44,24 @@ def ReadCNFObject(path):
                 wff.append(items[:-1])
 
 
+def GenerateInput(wff):
+    num_var = wff.n_vars
+    start_set = set()
+
+    for i in range(num_var + 1):
+        temp_arr = [-1]*(num_var-i) + [1]*(i)
+        for x in itertools.permutations(temp_arr):
+            start_set.add(x)
+
+    return start_set
+
 def main():
     path = "kSAT.cnf"
-    wff_gen = ReadWff(path)
+    cnf_gen = ReadCNFObject(path)
     for _ in range(10):
-        wff = next(wff_gen)
-        print(wff)
+        cnf = next(cnf_gen)
+        input = GenerateInput(cnf)
+        print(input)
 
     return 0
 
