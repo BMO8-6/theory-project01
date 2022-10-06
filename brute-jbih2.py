@@ -4,6 +4,8 @@
 # Libraries
 import time
 import xlwt
+import pandas as pd
+import os
 
 
 # class to hold all the necessary metadata from the file input
@@ -117,7 +119,7 @@ def create_last_str(filename, iter, num_sat, num_unsat, num_ans_provided, num_co
 def main():
     # intialization of variables 
     num_time_decimal_round, num_var_skip = 1, 18
-    num_sat = num_unsat = num_ans_provided = num_corr_ans = csv_row = 0    
+    num_sat = num_unsat = num_ans_provided = num_corr_ans = xls_row = 0    
 
     # user input for filename and whether to skip certain wff's
     filename = input('Please enter the filename without the .cnf: ')   
@@ -185,12 +187,20 @@ def main():
             num_unsat += 1
 
         # write wff info to the csv file
-        cnf_solutions_sheet.write(csv_row, 0, create_output_str(cnf, iter, sat_cond, corr_answer, input_conversion(corr_input)))
-        csv_row += 1
+        cnf_solutions_sheet.write(xls_row, 0, create_output_str(cnf, iter, sat_cond, corr_answer, input_conversion(corr_input)))
+        xls_row += 1
 
     # write last line of csv file and save
-    cnf_solutions_sheet.write(csv_row, 0, create_last_str(filename, iter, num_sat, num_unsat, num_ans_provided, num_corr_ans))
+    cnf_solutions_sheet.write(xls_row, 0, create_last_str(filename, iter, num_sat, num_unsat, num_ans_provided, num_corr_ans))
     output_wb.save(f"{filename}_cnf_solutions.xls")
+
+    # convert excel file to csv, did this method because I had already written the code to write to excel
+    read_file = pd.read_excel(filename + "_cnf_solutions.xls")
+    read_file.to_csv(filename + "_cnf_solutions.csv", index = None, header=True)
+
+    # delete remnant excel file
+    os.remove(filename + "_cnf_solutions.xls")
+
     print("\n***CSV file generated***\n")
 
 
