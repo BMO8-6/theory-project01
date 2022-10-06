@@ -1,5 +1,6 @@
 #!/usr/binenv python3
 
+
 # Libraries
 import time
 import xlwt
@@ -36,7 +37,7 @@ def read_input(path):
                 items = [int(x) for x in line.strip().split(',')]
                 wff.append(items[:-1])
 
-                # if we've read all the clauses, yield
+                # if we've read all the clauses, yield and reset the wff array
                 if len(wff) == int(num_clauses):
                     yield CNF(int(max_literals), int(num_vars), 0, int(num_clauses), answer, wff, 0)
                     wff = []
@@ -115,7 +116,7 @@ def create_last_str(filename, iter, num_sat, num_unsat, num_ans_provided, num_co
 
 def main():
     # intialization of variables 
-    num_time_decimals, num_var_skip = 1, 18
+    num_time_decimal_round, num_var_skip = 1, 18
     num_sat = num_unsat = num_ans_provided = num_corr_ans = csv_row = 0    
 
     # user input for filename and whether to skip certain wff's
@@ -131,6 +132,7 @@ def main():
 
     # iter handles which problem number is being calculated
     for iter, cnf in enumerate(cnf_gen):
+        # initialize
         sat_cond = 'U'
         corr_answer = 0
         corr_input = []
@@ -140,12 +142,12 @@ def main():
             print(f"{iter + 1}) Skipped - over {num_var_skip} variables...")
             continue
         
-        print(f"{iter + 1}) Generating solutions...")
+        print(f"{iter + 1}) Generating solution...")
 
-        # generate first input arr
+        # generate first input arr to not check any more inputs than necessary (just need 1 success for satisfiability)
         input_gen = create_input(cnf)
         
-        # doesn't check any more inputs than necessary (just need 1 success for sat)
+        # starts timer
         start_time = time.time()
         
         for arr in input_gen:
@@ -154,11 +156,12 @@ def main():
                 corr_input = arr
                 sat_cond = 'S'
                 num_sat += 1
+                print("   S - The WFF is satisfiable.")
                 break
         
         # calculates the time taken for each operation
         done_time = time.time()
-        cnf.runtime = round((done_time - start_time) * pow(10, 6), num_time_decimals)
+        cnf.runtime = round((done_time - start_time) * pow(10, 6), num_time_decimal_round)
 
         # finds the number of literals in each wff
         cnf.num_literals = cnf_literals_counter(cnf)
@@ -178,6 +181,7 @@ def main():
         
         # increment if unsatisfiable
         if sat_cond == 'U':
+            print("   U - The WFF is unsatisfiable.")
             num_unsat += 1
 
         # write wff info to the csv file
